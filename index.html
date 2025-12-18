@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Vault</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="crt-flicker"></div>
+    
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">
+                <span class="logo-icon">▶</span>
+                ARCADE VAULT
+            </h1>
+            <nav class="nav">
+                <a href="#" class="nav-link active">HOME</a>
+                <a href="#" class="nav-link">GAMES</a>
+                <a href="#" class="nav-link">EMULATORS</a>
+                <a href="#" class="nav-link">ABOUT</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <section class="hero">
+            <div class="hero-content">
+                <h2 class="hero-title">
+                    <span class="glitch" data-text="PRESS START">PRESS START</span>
+                </h2>
+                <p class="hero-subtitle">Your portal to classic gaming</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">GAMES</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">0</span>
+                        <span class="stat-label">ROMS</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">∞</span>
+                        <span class="stat-label">FUN</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="games-section">
+            <h3 class="section-title">
+                <span class="title-decoration">◆</span>
+                GAME LIBRARY
+                <span class="title-decoration">◆</span>
+            </h3>
+            
+            <div class="games-grid" id="games-grid">
+                <!-- Games will be dynamically inserted here -->
+                <div class="empty-state">
+                    <div class="empty-icon">🎮</div>
+                    <p class="empty-text">NO GAMES LOADED</p>
+                    <p class="empty-subtext">Insert coin to continue...</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="categories-section">
+            <h3 class="section-title">
+                <span class="title-decoration">◆</span>
+                CATEGORIES
+                <span class="title-decoration">◆</span>
+            </h3>
+            
+            <div class="categories-grid">
+                <div class="category-card" data-category="nes">
+                    <span class="category-icon">🕹️</span>
+                    <span class="category-name">NES</span>
+                    <span class="category-count">0</span>
+                </div>
+                <div class="category-card" data-category="snes">
+                    <span class="category-icon">🎮</span>
+                    <span class="category-name">SNES</span>
+                    <span class="category-count">0</span>
+                </div>
+                <div class="category-card" data-category="gba">
+                    <span class="category-icon">📱</span>
+                    <span class="category-name">GBA</span>
+                    <span class="category-count">0</span>
+                </div>
+                <div class="category-card" data-category="n64">
+                    <span class="category-icon">🎯</span>
+                    <span class="category-name">N64</span>
+                    <span class="category-count">0</span>
+                </div>
+                <div class="category-card" data-category="arcade">
+                    <span class="category-icon">👾</span>
+                    <span class="category-name">ARCADE</span>
+                    <span class="category-count">0</span>
+                </div>
+                <div class="category-card" data-category="other">
+                    <span class="category-icon">⭐</span>
+                    <span class="category-name">OTHER</span>
+                    <span class="category-count">0</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p class="footer-text">ARCADE VAULT © 2024</p>
+            <p class="footer-subtext">For educational purposes only</p>
+            <div class="footer-decoration">
+                ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

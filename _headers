@@ -1,0 +1,65 @@
+# Cloudflare Pages Headers
+# https://developers.cloudflare.com/pages/configuration/headers/
+
+# Global headers for all pages
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# Player page needs COOP/COEP headers for SharedArrayBuffer (required by N64, PSX cores)
+/player.html
+  Cross-Origin-Embedder-Policy: require-corp
+  Cross-Origin-Opener-Policy: same-origin
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' blob: data:
+
+# Index page - use credentialless to allow Google Fonts while still supporting navigation
+/index.html
+  Cross-Origin-Opener-Policy: same-origin
+
+# ROM files
+/roms/*
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+  Cache-Control: public, max-age=604800
+
+# EmulatorJS main data files
+/emulatorjs/data/*
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
+# EmulatorJS core data files (compressed WASM archives)
+/emulatorjs/data/cores/*
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+  Cache-Control: public, max-age=604800
+
+# Core reports
+/emulatorjs/data/cores/reports/*
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+  Content-Type: application/json
+
+# Compression utilities
+/emulatorjs/data/compression/*
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
+# WASM file in compression folder
+/emulatorjs/data/compression/libunrar.wasm
+  Content-Type: application/wasm
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
+# Localization
+/emulatorjs/data/localization/*
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+  Content-Type: application/json
+
+# Static asset caching
+/*.css
+  Cache-Control: public, max-age=31536000
+
+/*.js
+  Cache-Control: public, max-age=31536000

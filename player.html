@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Now Playing - Arcade Vault</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0f;
+            color: #e0e0e0;
+            font-family: 'VT323', monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 1rem 2rem;
+            background: #050508;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            color: #00ffff;
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 255, 255, 0.1);
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .game-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            color: #39ff14;
+            text-shadow: 0 0 10px #39ff14;
+        }
+
+        .controls-hint {
+            font-size: 1rem;
+            color: #606070;
+        }
+
+        .player-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        #game {
+            width: 100%;
+            max-width: 960px;
+            aspect-ratio: 4/3;
+            background: #000;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+        }
+
+        .error-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .error-text {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.8rem;
+            color: #ff6600;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-subtext {
+            color: #606070;
+            font-size: 1.2rem;
+        }
+
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .loading-text {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.8rem;
+            color: #00ffff;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .fullscreen-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.5rem;
+            color: #ff00ff;
+            background: none;
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(255, 0, 255, 0.1);
+            text-shadow: 0 0 10px #ff00ff;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="back-btn">← BACK</a>
+        <span class="game-title" id="game-title">LOADING...</span>
+        <div>
+            <span class="controls-hint">ENTER = Start | WASD/Arrows = Move | JKL = A/B/X</span>
+            <button class="fullscreen-btn" onclick="toggleFullscreen()">FULLSCREEN</button>
+        </div>
+    </header>
+
+    <div class="player-container">
+        <div id="game">
+            <div class="loading-state" id="loading">
+                <div class="loading-text">LOADING ROM...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Parse URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const rom = params.get('rom');
+        const core = params.get('core');
+        const title = params.get('title') || 'Unknown Game';
+        const clearCache = params.get('clearcache') === 'true';
+
+        // Update title
+        document.getElementById('game-title').textContent = title.toUpperCase();
+        document.title = `${title} - Arcade Vault`;
+
+        // Core mapping for EmulatorJS
+        const CORE_MAP = {
+            'nes': 'nes',
+            'snes': 'snes',
+            'gba': 'gba',
+            'gb': 'gb',
+            'gbc': 'gb',
+            'n64': 'n64',
+            'nds': 'nds',
+            'psx': 'psx',
+            'segaMD': 'segaMD',
+            'segaGG': 'segaGG',
+            'segaMS': 'segaMS',
+            'atari2600': 'atari2600',
+            'arcade': 'mame2003'
+        };
+
+        function showError(message) {
+            document.getElementById('game').innerHTML = `
+                <div class="error-state">
+                    <div class="error-icon">⚠️</div>
+                    <p class="error-text">LOAD ERROR</p>
+                    <p class="error-subtext">${message}</p>
+                    <p class="error-subtext" style="margin-top: 1rem; font-size: 0.9rem;">
+                        <a href="?${new URLSearchParams({...Object.fromEntries(params), clearcache: 'true'})}" 
+                           style="color: #ff00ff;">Try clearing cache</a>
+                    </p>
+                </div>
+            `;
+        }
+
+        function toggleFullscreen() {
+            const gameDiv = document.getElementById('game');
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                gameDiv.requestFullscreen();
+            }
+        }
+
+        // Clear EmulatorJS IndexedDB cache if requested
+        async function clearEJSCache() {
+            const databases = ['EmulatorJS-core', 'EmulatorJS-rom', 'EmulatorJS-bios', 'EmulatorJS'];
+            for (const dbName of databases) {
+                try {
+                    await new Promise((resolve, reject) => {
+                        const req = indexedDB.deleteDatabase(dbName);
+                        req.onsuccess = resolve;
+                        req.onerror = reject;
+                    });
+                    console.log(`Cleared ${dbName} cache`);
+                } catch (e) {
+                    console.log(`Could not clear ${dbName}:`, e);
+                }
+            }
+        }
+
+        // Add global error handler to catch script errors
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.message, event.filename, event.lineno);
+            if (event.message.includes('EJS_Runtime') || event.filename?.includes('blob:')) {
+                showError(`Script error: ${event.message}`);
+            }
+        });
+
+        // Initialize emulator
+        async function init() {
+            if (clearCache) {
+                document.getElementById('loading').innerHTML = '<div class="loading-text">CLEARING CACHE...</div>';
+                await clearEJSCache();
+                // Remove clearcache param and reload
+                params.delete('clearcache');
+                window.location.search = params.toString();
+                return;
+            }
+
+            if (!rom || !core) {
+                showError('Missing ROM or core parameter');
+                return;
+            }
+            
+            if (!CORE_MAP[core]) {
+                showError(`Unknown core: ${core}`);
+                return;
+            }
+
+            // Convert relative ROM path to absolute URL
+            const romUrl = new URL(rom, window.location.origin).href;
+            
+            // Debug logging
+            console.log('EmulatorJS Init:', { rom: romUrl, core: CORE_MAP[core], dataPath: '/emulatorjs/data/' });
+            
+            // EmulatorJS configuration (using LOCAL files)
+            window.EJS_player = '#game';
+            window.EJS_gameUrl = romUrl;
+            window.EJS_core = CORE_MAP[core];
+            window.EJS_pathtodata = '/emulatorjs/data/';
+            window.EJS_startOnLoaded = true;
+            
+            // Enable debug mode to get more info
+            window.EJS_DEBUG_XX = false; // Set to true for non-minified files
+            
+            // Customize appearance
+            window.EJS_color = '#00ffff';
+            window.EJS_backgroundColor = '#0a0a0f';
+            
+            // Load EmulatorJS from local files
+            const script = document.createElement('script');
+            script.src = '/emulatorjs/data/loader.js';
+            script.onerror = (e) => {
+                console.error('Loader script error:', e);
+                showError('Failed to load emulator. Check /emulatorjs/data/ folder.');
+            };
+            document.body.appendChild(script);
+        }
+
+        init();
+    </script>
+</body>
+</html>
